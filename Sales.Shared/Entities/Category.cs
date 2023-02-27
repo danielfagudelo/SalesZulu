@@ -13,5 +13,7 @@ namespace Sales.Shared.Entities
         public string Name { get; set; } = null!;
 
         public ICollection<ProdCategory>? ProdCategories { get; set; }
+
+        public int ProdCategoriesNumber => ProdCategories == null ? 0 : ProdCategories.Count;
     }
 }

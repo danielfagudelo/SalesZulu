@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Services.Profile;
 using Sales.API.Data;
 using Sales.Shared.Entities;
 
@@ -39,18 +40,50 @@ namespace Sales.API.Controllers
         [HttpPost]
         public async Task<ActionResult> PostAsync(Category category)
         {
-            _context.Add(category);
-            await _context.SaveChangesAsync();
-            return Ok(category);
+            try
+            {
+                _context.Add(category);
+                await _context.SaveChangesAsync();
+                return Ok(category);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe una Categoria con el mismo nombre.");
+                }
+
+                return BadRequest(dbUpdateException.Message);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
 
         }
 
         [HttpPut]
         public async Task<ActionResult> PutAsync(Category category)
         {
-            _context.Update(category);
-            await _context.SaveChangesAsync();
-            return Ok(category);
+            try
+            {
+                _context.Update(category);
+                await _context.SaveChangesAsync();
+                return Ok(category);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe una categoria con el mismo nombre.");
+                }
+
+                return BadRequest(dbUpdateException.Message);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
 
         }
 

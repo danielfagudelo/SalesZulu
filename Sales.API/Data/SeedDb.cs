@@ -27,6 +27,15 @@ namespace Sales.API.Data
 
                 await _context.SaveChangesAsync();
             }
+
+            if (!_context.Categories.Any())
+            {
+                _context.Categories.Add(new Category { Name = "Carros" });
+                _context.Categories.Add(new Category { Name = "Motos" });
+                _context.Categories.Add(new Category { Name = "Volquetas" });
+
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

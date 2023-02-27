@@ -13,20 +13,20 @@
 
     private async Task Create()
     {
-        var httpResponse = await repository.Post("/api/Categories", category);
+        var httpResponse = await repository.Post("/api/categories", category);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", message);
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
 
-        categoryForm!.FormPostedSuccessfully = true;
-        navigationManager.NavigateTo("/categories");
+        Return();
     }
 
     private void Return()
     {
+        categoryForm!.FormPostedSuccessfully = true;
         navigationManager.NavigateTo("/categories");
     }
 }

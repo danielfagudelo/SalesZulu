@@ -5,6 +5,7 @@ using Sales.Shared.Entities;
 
 namespace Sales.API.Controllers
 {
+    
     [ApiController]
     [Route("/api/countries")]
     public class CountriesController : ControllerBase
