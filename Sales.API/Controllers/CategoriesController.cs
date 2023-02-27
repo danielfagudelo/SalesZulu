@@ -7,7 +7,7 @@ namespace Sales.API.Controllers
 {
 
     [ApiController]
-    [Route("/api/Categories")]
+    [Route("/api/categories")]
     public class CategoriesController: ControllerBase
     {
         private readonly DataContext _context;
@@ -28,7 +28,7 @@ namespace Sales.API.Controllers
         public async Task<IActionResult> GetAsync(int id)
         {
             var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
-            if (category is null)
+            if (category == null)
             {
                 return NotFound();
             }
@@ -58,7 +58,7 @@ namespace Sales.API.Controllers
         public async Task<IActionResult> DeleteAsync(int id)
         {
             var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
-            if (category is null)
+            if (category == null)
             {
                 return NotFound();
             }

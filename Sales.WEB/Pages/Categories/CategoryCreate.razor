@@ -13,10 +13,10 @@
 
     private async Task Create()
     {
-        var responseHttp = await repository.Post("/api/categories", category);
-        if (responseHttp.Error)
+        var httpResponse = await repository.Post("/api/Categories", category);
+        if (httpResponse.Error)
         {
-            var message = await responseHttp.GetErrorMessageAsync();
+            var message = await httpResponse.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message);
             return;
         }
