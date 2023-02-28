@@ -59,7 +59,8 @@ namespace Sales.WEB.Repositories
         public async Task<HttpResponseWrapper<object>> Delete(string url)
         {
             var responseHTTP = await _httpClient.DeleteAsync(url);
-            throw new NotImplementedException();
+            return new HttpResponseWrapper<object>(null, !responseHTTP.IsSuccessStatusCode, responseHTTP);
+
         }
 
         public async Task<HttpResponseWrapper<object>> Put<T>(string url, T model)

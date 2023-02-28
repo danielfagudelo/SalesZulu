@@ -30,7 +30,7 @@
                         <td>
                             <a class="btn btn-info" href="/categories/details/@category.Id">Detalles</a>
                             <a class="btn btn-warning" href="/categories/edit/@category.Id">Editar</a>
-                            <button class="btn btn-danger" @onclick=@(() => DeleteAsync(category.Id))>Borrar</button>
+                            <button class="btn btn-danger" @onclick=@(() => DeleteAsync(category))>Borrar</button>
                         </td>
                     </tr>
                 }
@@ -53,7 +53,7 @@
         Categories = responseHttp.Response;
     }
 
-    private async Task DeleteAsync(int id)
+    private async Task DeleteAsync(Category category)
     {
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {
@@ -71,7 +71,7 @@
             return;
         }
 
-        var responseHttp = await repository.Delete($"/api/categories/{id}");
+        var responseHttp = await repository.Delete($"/api/categories/{category.Id}");
         if (responseHttp.Error)
         {
             if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
@@ -81,7 +81,8 @@
                 return;
             }
         }
-
         await LoadAsync();
+        
     }
 }
+
