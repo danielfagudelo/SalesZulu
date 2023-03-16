@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Services.Profile;
 using Sales.API.Data;
+using Sales.API.Helpers;
+using Sales.Shared.DTOs;
 using Sales.Shared.Entities;
 
 namespace Sales.API.Controllers
 {
-
     [ApiController]
     [Route("/api/categories")]
     public class CategoriesController: ControllerBase
@@ -20,21 +20,60 @@ namespace Sales.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
-            return Ok(await _context.Categories.ToListAsync());
+            var queryable = _context.Categories
+                .Include(x => x.ProdCategories)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
+            return Ok(await queryable
+                .OrderBy(x => x.Name)
+                .Paginate(pagination)
+                .ToListAsync());
+        }
+
+        [HttpGet("totalPages")]
+        public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
+        {
+            var queryable = _context.Categories.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
+            double count = await queryable.CountAsync();
+            double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
+            return Ok(totalPages);
+        }
+
+        [HttpGet("full")]
+        public async Task<IActionResult> GetFullAsync()
+        {
+            return Ok(await _context.Categories
+                .Include(x => x.ProdCategories!)
+                .ThenInclude(x => x.Products)
+                .ToListAsync());
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetAsync(int id)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
-            if (category == null)
+            var country = await _context.Categories
+                .Include(x => x.ProdCategories!)
+                .ThenInclude(x => x.Products)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (country == null)
             {
                 return NotFound();
             }
 
-            return Ok(category);
+            return Ok(country);
         }
 
         [HttpPost]

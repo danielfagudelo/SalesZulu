@@ -1,4 +1,4 @@
-﻿using Sales.Shared.Responces;
+﻿using Sales.Shared.Responses;
 
 namespace Sales.API.Services
 {

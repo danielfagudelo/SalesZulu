@@ -1,4 +1,4 @@
-﻿namespace Sales.Shared.Responces
+﻿namespace Sales.Shared.Responses
 {
     public class Response
     {
