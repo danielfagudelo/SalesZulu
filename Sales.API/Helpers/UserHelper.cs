@@ -1,26 +1,34 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sales.API.Data;
+using Sales.Shared.DTOs;
 using Sales.Shared.Entities;
 
 namespace Sales.API.Helpers
 {
-    public class UserHelper : IUserHelper
+    public class UserHelper: IUserHelper
     {
         private readonly DataContext _context;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<User> _signInManager;
 
-        public UserHelper(DataContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public UserHelper(DataContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _signInManager = signInManager;
         }
 
         public async Task<IdentityResult> AddUserAsync(User user, string password)
         {
             return await _userManager.CreateAsync(user, password);
+        }
+
+        public Task AddUserAsync(User user, object password)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task AddUserToRoleAsync(User user, string roleName)
@@ -42,16 +50,30 @@ namespace Sales.API.Helpers
 
         public async Task<User> GetUserAsync(string email)
         {
-            return await _context.Users
-                .Include(u => u.City)
-                .ThenInclude(c => c.State)
-                .ThenInclude(s => s.Country)
-                .FirstOrDefaultAsync(x => x.Email == email);
+            var user = await _context.Users
+             .Include(u => u.City!)
+             .ThenInclude(c => c.State!)
+             .ThenInclude(s => s.Country!)
+             .FirstOrDefaultAsync(u => u.Email! == email);
+            return user!;
+
         }
 
         public async Task<bool> IsUserInRoleAsync(User user, string roleName)
         {
             return await _userManager.IsInRoleAsync(user, roleName);
         }
+
+        public async Task<SignInResult> LoginAsync(LoginDTO model)
+        {
+            return await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+        }
+
+       
+        public async Task LogoutAsync()
+        {
+            await _signInManager.SignOutAsync();
+        }
+
     }
 }
