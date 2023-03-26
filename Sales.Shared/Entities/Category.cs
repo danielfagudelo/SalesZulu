@@ -6,14 +6,9 @@ namespace Sales.Shared.Entities
     {
         public int Id { get; set; }
 
-        [Display(Name = "Categoria")]
-        [Required(ErrorMessage = " El Campo {0} es obligatorio.")]
-        [MaxLength(100, ErrorMessage = "El campo {0} no puede tenermas de {1} carateres")]
-
+        [Display(Name = "Categoría")]
+        [MaxLength(100, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Name { get; set; } = null!;
-
-        public ICollection<ProdCategory>? ProdCategories { get; set; }
-
-        public int ProdCategoriesNumber => ProdCategories == null ? 0 : ProdCategories.Count;
     }
 }

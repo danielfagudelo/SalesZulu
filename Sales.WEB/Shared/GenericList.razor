@@ -4,23 +4,19 @@
 {
     @if(Loading is null)
     {
-        <div class="align-items-center">
-            <img src="https://i.gifer.com/origin/ec/ecf46fc2a40f43ad0ef438b04b0d2e8e_w200.gif" />
-        </div>
-
+        <div class="spinner" />
     }
     else
     {
         @Loading
     }
 }
-
-else if (MyList.Count == 0)
+else if(MyList.Count == 0)
 {
     @if(NoRecords is null)
     {
         <div class="align-items-center">
-            <p>No hay registros para mostar</p>
+            <p>No hay registros para mostrar.</p>
         </div>
     }
     else
@@ -32,6 +28,7 @@ else
 {
     @Body
 }
+
 
 @code {
     [Parameter]

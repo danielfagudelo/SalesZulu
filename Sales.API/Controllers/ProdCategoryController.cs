@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sales.API.Data;
 using Sales.API.Helpers;
@@ -8,6 +10,7 @@ using Sales.Shared.Entities;
 namespace Sales.API.Controllers
 {
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("/api/prodcategories")]
     public class ProdCategoryController : ControllerBase
     {
@@ -16,6 +19,15 @@ namespace Sales.API.Controllers
         public ProdCategoryController(DataContext context)
         {
             _context = context;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("combo/{prodcategoriesId:int}")]
+        public async Task<ActionResult> GetCombo(int prodcategoriesId)
+        {
+            return Ok(await _context.Products
+                .Where(x => x.ProdCategoryId == prodcategoriesId)
+                .ToListAsync());
         }
 
         [HttpGet]

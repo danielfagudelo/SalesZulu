@@ -24,8 +24,32 @@ namespace Sales.API.Data
         {
             await _context.Database.EnsureCreatedAsync();
             await CheckCountriesAsync();
+            await CheckCategoriesAsync();
             await CheckRolesAsync();
             await CheckUserAsync("1010", "Juan", "Zuluaga", "zulu@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", UserType.Admin);
+        }
+
+        private async Task CheckCategoriesAsync()
+        {
+            if (!_context.Categories.Any())
+            {
+                _context.Categories.Add(new Category { Name = "Deportes" });
+                _context.Categories.Add(new Category { Name = "Calzado" });
+                _context.Categories.Add(new Category { Name = "Tecnología " });
+                _context.Categories.Add(new Category { Name = "Lenceria" });
+                _context.Categories.Add(new Category { Name = "Erótica" });
+                _context.Categories.Add(new Category { Name = "Comida" });
+                _context.Categories.Add(new Category { Name = "Ropa" });
+                _context.Categories.Add(new Category { Name = "Jugetes" });
+                _context.Categories.Add(new Category { Name = "Mascotas" });
+                _context.Categories.Add(new Category { Name = "Autos" });
+                _context.Categories.Add(new Category { Name = "Cosmeticos" });
+                _context.Categories.Add(new Category { Name = "Hogar" });
+                _context.Categories.Add(new Category { Name = "Jardín" });
+                _context.Categories.Add(new Category { Name = "Ferreteria" });
+                _context.Categories.Add(new Category { Name = "Video Juegos" });
+                await _context.SaveChangesAsync();
+            }
         }
 
         private async Task CheckRolesAsync()
@@ -39,6 +63,12 @@ namespace Sales.API.Data
             var user = await _userHelper.GetUserAsync(email);
             if (user == null)
             {
+                var city = await _context.Cities.FirstOrDefaultAsync(x => x.Name == "Medellín");
+                if (city == null)
+                {
+                    city = await _context.Cities.FirstOrDefaultAsync();
+                }
+
                 user = new User
                 {
                     FirstName = firstName,
@@ -48,12 +78,15 @@ namespace Sales.API.Data
                     PhoneNumber = phone,
                     Address = address,
                     Document = document,
-                    City = _context.Cities.FirstOrDefault(),
+                    City = city,
                     UserType = userType,
                 };
 
                 await _userHelper.AddUserAsync(user, "123456");
                 await _userHelper.AddUserToRoleAsync(user, userType.ToString());
+
+                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                await _userHelper.ConfirmEmailAsync(user, token);
             }
 
             return user;
@@ -69,7 +102,7 @@ namespace Sales.API.Data
                     List<CountryResponse> countries = (List<CountryResponse>)responseCountries.Result!;
                     foreach (CountryResponse countryResponse in countries)
                     {
-                        Country country = await _context.Countries!.FirstOrDefaultAsync(c => c.Name == countryResponse.Name!)!;
+                        Country? country = await _context.Countries!.FirstOrDefaultAsync(c => c.Name == countryResponse.Name!)!;
                         if (country == null)
                         {
                             country = new() { Name = countryResponse.Name!, States = new List<State>() };

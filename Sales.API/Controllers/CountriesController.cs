@@ -21,6 +21,13 @@ namespace Sales.API.Controllers
             _context = context;
         }
 
+        [AllowAnonymous]
+        [HttpGet("combo")]
+        public async Task<ActionResult> GetCombo()
+        {
+            return Ok(await _context.Countries.ToListAsync());
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
@@ -96,7 +103,7 @@ namespace Sales.API.Controllers
 
                 return BadRequest(dbUpdateException.Message);
             }
-            catch (Exception exception)
+            catch(Exception exception) 
             {
                 return BadRequest(exception.Message);
             }

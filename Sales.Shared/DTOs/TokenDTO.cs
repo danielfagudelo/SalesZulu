@@ -1,6 +1,4 @@
-﻿using Sales.Shared.Entities;
-
-namespace Sales.Shared.DTOs
+﻿namespace Sales.Shared.DTOs
 {
     public class TokenDTO
     {
